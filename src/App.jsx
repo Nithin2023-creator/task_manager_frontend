@@ -580,7 +580,9 @@ const SectionCard = ({ section, onClick, onDelete }) => {
             {section.subsections?.length || 0} subsections • {section.tasks?.length || 0} tasks
           </p>
         </div>
-        <ProgressRing percent={section.completionPercent} size={65} strokeWidth={5} />
+        <div className="flex-shrink-0">
+          <ProgressRing percent={section.completionPercent} size={65} strokeWidth={5} />
+        </div>
         {onDelete && (
           <button
             onClick={handleDelete}
