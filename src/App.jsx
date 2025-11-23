@@ -921,7 +921,6 @@ const StatsBar = ({ stats }) => (
         <span className="font-bold text-white text-lg sm:text-xl block leading-none mb-1">
           {stats.points?.toLocaleString() || 0}
         </span>
-        <p className="text-[10px] sm:text-xs text-white/50 font-medium uppercase tracking-wider">Points</p>
       </div>
     </GlassCard>
 
@@ -933,7 +932,6 @@ const StatsBar = ({ stats }) => (
         <span className="font-bold text-white text-lg sm:text-xl block leading-none mb-1">
           {stats.streak || 0}
         </span>
-        <p className="text-[10px] sm:text-xs text-white/50 font-medium uppercase tracking-wider">Streak</p>
       </div>
     </GlassCard>
 
@@ -945,7 +943,6 @@ const StatsBar = ({ stats }) => (
         <span className="font-bold text-white text-lg sm:text-xl block leading-none mb-1">
           {stats.tasksCompleted || 0}/{stats.totalTasks || 0}
         </span>
-        <p className="text-[10px] sm:text-xs text-white/50 font-medium uppercase tracking-wider">Done</p>
       </div>
     </GlassCard>
   </div>
@@ -985,9 +982,6 @@ const WeeklyHeatmap = ({ weeklyData, onDateClick }) => {
               title={`${day.completed}/${day.total} tasks completed`}
             >
               <div className="absolute inset-0 bg-gradient-to-br from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-              <div className="absolute inset-0 flex items-center justify-center">
-                <span className="text-xs font-bold text-white/90">{day.completed}/{day.total}</span>
-              </div>
             </div>
             <span className="text-xs text-white/60 font-medium group-hover:text-white/90 transition-colors">{dayName}</span>
           </button>
