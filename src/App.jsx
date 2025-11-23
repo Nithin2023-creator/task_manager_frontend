@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { ChevronLeft, Plus, Calendar, Home, Trophy, Flame, Check, X, Star, Target, Clock, Tag, Sparkles, Zap, User, Mail, Lock, Eye, EyeOff, Award, TrendingUp, LogOut, Loader2, AlertCircle, Menu, Bell } from 'lucide-react';
+import { ChevronLeft, Plus, Calendar, Home, Trophy, Flame, Check, X, Star, Target, Clock, Tag, Sparkles, Zap, User, Mail, Lock, Eye, EyeOff, Award, TrendingUp, LogOut, Loader2, AlertCircle, Menu, Bell, Download } from 'lucide-react';
 
 // API Configuration
-const API_URL = 'http://localhost:5000/api';
+const API_URL = 'https://task-manager-backend-x6h1.onrender.com/api';
 
 const api = {
   setToken: (token) => localStorage.setItem('token', token),
@@ -275,7 +275,7 @@ const GlassCard = ({ children, className = '', onClick, hover3D = true, glowColo
         setTransform('');
         setGlowPos({ x: 50, y: 50 });
       }}
-      className={`relative overflow-hidden rounded-3xl cursor-pointer backdrop-blur-xl border border-white/10 ${className}`}
+      className={`relative overflow-hidden rounded-3xl cursor-pointer backdrop-blur-xl border border-white/10 transition-all duration-300 ${className}`}
       style={{
         background: 'linear-gradient(135deg, rgba(255,255,255,0.12) 0%, rgba(255,255,255,0.05) 100%)',
         boxShadow: '0 8px 32px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.2)',
@@ -387,7 +387,7 @@ const TaskCard = ({ task, onComplete, onDelete, sectionName, sectionIcon, subsec
 
   return (
     <GlassCard
-      className={`p-4 ${isCompleted ? 'opacity-50' : ''} ${isDeleting ? 'animate-magic-delete' : ''}`}
+      className={`p-5 sm:p-6 ${isCompleted ? 'opacity-50' : ''} ${isDeleting ? 'animate-magic-delete' : ''}`}
       hover3D={!isCompleted && !isDeleting}
       glowColor={isCompleted ? 'green' : 'cyan'}
     >
@@ -416,7 +416,7 @@ const TaskCard = ({ task, onComplete, onDelete, sectionName, sectionIcon, subsec
             e.stopPropagation();
             if (!isCompleted) onComplete(task.id || task._id);
           }}
-          className={`flex-shrink-0 w-10 h-10 rounded-xl flex items-center justify-center transition-all duration-500 ${isCompleted
+          className={`flex-shrink-0 w-12 h-12 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center transition-all duration-500 ${isCompleted
             ? 'bg-gradient-to-br from-green-500 to-emerald-600 shadow-lg shadow-green-500/40 scale-110'
             : 'bg-white/10 hover:bg-cyan-500/30 hover:scale-110'
             }`}
@@ -429,7 +429,7 @@ const TaskCard = ({ task, onComplete, onDelete, sectionName, sectionIcon, subsec
         </button>
         <div className="flex-1 min-w-0">
           <h4
-            className={`font-semibold text-white text-lg transition-all duration-300 ${isCompleted ? 'line-through opacity-60' : ''
+            className={`font-semibold text-white text-xl sm:text-lg transition-all duration-300 ${isCompleted ? 'line-through opacity-60' : ''
               }`}
           >
             {task.title}
@@ -440,9 +440,9 @@ const TaskCard = ({ task, onComplete, onDelete, sectionName, sectionIcon, subsec
               {subsectionName && ` → ${subsectionName}`}
             </p>
           )}
-          <div className="flex flex-wrap gap-2 mt-3">
+          <div className="flex flex-wrap gap-3 mt-4 sm:mt-3">
             <span
-              className={`px-3 py-1 rounded-full text-xs font-semibold flex items-center gap-1 ${task.type === 'daily'
+              className={`px-4 py-2 sm:px-3 sm:py-1 rounded-full text-sm sm:text-xs font-semibold flex items-center gap-1 ${task.type === 'daily'
                 ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/30'
                 : 'bg-purple-500/20 text-purple-300 border border-purple-500/30'
                 }`}
@@ -459,11 +459,11 @@ const TaskCard = ({ task, onComplete, onDelete, sectionName, sectionIcon, subsec
                 </>
               )}
             </span>
-            <span className="px-3 py-1 rounded-full text-xs bg-white/10 text-white/70 border border-white/10">
+            <span className="px-4 py-2 sm:px-3 sm:py-1 rounded-full text-sm sm:text-xs bg-white/10 text-white/70 border border-white/10">
               {date}
             </span>
             <span
-              className={`px-3 py-1 rounded-full text-xs font-semibold capitalize ${task.priority === 'high'
+              className={`px-4 py-2 sm:px-3 sm:py-1 rounded-full text-sm sm:text-xs font-semibold capitalize ${task.priority === 'high'
                 ? 'bg-red-500/20 text-red-300'
                 : task.priority === 'medium'
                   ? 'bg-yellow-500/20 text-yellow-300'
@@ -526,7 +526,7 @@ const TaskCard = ({ task, onComplete, onDelete, sectionName, sectionIcon, subsec
           animation: magic-delete 0.8s ease-out forwards;
         }
       `}</style>
-    </GlassCard>
+    </GlassCard >
   );
 };
 
@@ -550,7 +550,7 @@ const SectionCard = ({ section, onClick, onDelete }) => {
   };
 
   return (
-    <GlassCard onClick={onClick} className={`p-6 group ${isDeleting ? 'animate-magic-delete' : ''}`}>
+    <GlassCard onClick={onClick} className={`p-6 sm:p-6 group ${isDeleting ? 'animate-magic-delete' : ''}`}>
       {isDeleting && (
         <>
           {Array.from({ length: 15 }).map((_, i) => (
@@ -569,11 +569,11 @@ const SectionCard = ({ section, onClick, onDelete }) => {
         </>
       )}
       <div className="flex items-center gap-5">
-        <div className="text-5xl transform group-hover:scale-110 transition-transform duration-500">
+        <div className="text-6xl sm:text-5xl transform group-hover:scale-110 transition-transform duration-500">
           {section.icon}
         </div>
         <div className="flex-1">
-          <h3 className="text-xl font-bold text-white group-hover:text-cyan-300 transition-colors duration-300">
+          <h3 className="text-2xl sm:text-xl font-bold text-white group-hover:text-cyan-300 transition-colors duration-300">
             {section.title}
           </h3>
           <p className="text-sm text-white/50 mt-1">
@@ -612,7 +612,7 @@ const SubsectionCard = ({ subsection, onClick, onDelete }) => {
   };
 
   return (
-    <GlassCard onClick={onClick} className={`p-5 group ${isDeleting ? 'animate-magic-delete' : ''}`} glowColor="purple">
+    <GlassCard onClick={onClick} className={`p-6 sm:p-5 group ${isDeleting ? 'animate-magic-delete' : ''}`} glowColor="purple">
       {isDeleting && (
         <>
           {Array.from({ length: 10 }).map((_, i) => (
@@ -631,11 +631,11 @@ const SubsectionCard = ({ subsection, onClick, onDelete }) => {
         </>
       )}
       <div className="flex items-center gap-4">
-        <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-purple-500/30 to-pink-500/30 flex items-center justify-center border border-purple-500/20">
+        <div className="w-14 h-14 sm:w-12 sm:h-12 rounded-2xl bg-gradient-to-br from-purple-500/30 to-pink-500/30 flex items-center justify-center border border-purple-500/20">
           <Sparkles size={22} className="text-purple-300" />
         </div>
         <div className="flex-1">
-          <h4 className="font-semibold text-white text-lg">{subsection.title}</h4>
+          <h4 className="font-semibold text-white text-xl sm:text-lg">{subsection.title}</h4>
           <p className="text-sm text-white/50">{subsection.tasks?.length || 0} tasks</p>
         </div>
         <ProgressRing percent={subsection.completionPercent} size={50} strokeWidth={4} />
@@ -910,7 +910,7 @@ const AddForm = ({ type, onSubmit, loading, currentSection }) => {
 // Stats Bar
 const StatsBar = ({ stats }) => (
   <div
-    className="flex items-center gap-6 px-6 py-4 rounded-2xl backdrop-blur-xl border border-white/10"
+    className="flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-6 px-6 py-6 sm:py-4 rounded-2xl backdrop-blur-xl border border-white/10"
     style={{
       background: 'linear-gradient(135deg, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0.03) 100%)'
     }}
@@ -924,7 +924,7 @@ const StatsBar = ({ stats }) => (
         <p className="text-xs text-white/50">Points</p>
       </div>
     </div>
-    <div className="w-px h-10 bg-white/10" />
+    <div className="hidden sm:block w-px h-10 bg-white/10" />
     <div className="flex items-center gap-3">
       <div className="p-2 rounded-xl bg-orange-500/20">
         <Flame size={22} className="text-orange-400" />
@@ -934,7 +934,7 @@ const StatsBar = ({ stats }) => (
         <p className="text-xs text-white/50">Day Streak</p>
       </div>
     </div>
-    <div className="w-px h-10 bg-white/10" />
+    <div className="hidden sm:block w-px h-10 bg-white/10" />
     <div className="flex items-center gap-3">
       <div className="p-2 rounded-xl bg-cyan-500/20">
         <Zap size={22} className="text-cyan-400" />
@@ -1397,6 +1397,102 @@ const RewardsPage = ({ stats, achievements }) => (
     </div>
   </div>
 );
+
+// Install Prompt Component
+const InstallPrompt = () => {
+  const [deferredPrompt, setDeferredPrompt] = useState(null);
+  const [showPrompt, setShowPrompt] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    // Check if mobile
+    const checkMobile = () => {
+      const userAgent = navigator.userAgent || navigator.vendor || window.opera;
+      if (/android/i.test(userAgent) || /iPad|iPhone|iPod/.test(userAgent)) {
+        setIsMobile(true);
+      }
+    };
+    checkMobile();
+
+    const handler = (e) => {
+      e.preventDefault();
+      setDeferredPrompt(e);
+      // Check if user has already dismissed or installed
+      const hasInstalled = localStorage.getItem('appInstalled');
+      const hasDismissed = localStorage.getItem('installPromptDismissed');
+
+      if (!hasInstalled && !hasDismissed) {
+        setShowPrompt(true);
+      }
+    };
+
+    window.addEventListener('beforeinstallprompt', handler);
+
+    return () => window.removeEventListener('beforeinstallprompt', handler);
+  }, []);
+
+  const handleInstall = async () => {
+    if (!deferredPrompt) return;
+
+    deferredPrompt.prompt();
+    const { outcome } = await deferredPrompt.userChoice;
+
+    if (outcome === 'accepted') {
+      localStorage.setItem('appInstalled', 'true');
+      setShowPrompt(false);
+    }
+    setDeferredPrompt(null);
+  };
+
+  const handleDismiss = () => {
+    setShowPrompt(false);
+    localStorage.setItem('installPromptDismissed', 'true');
+    // Reset dismissal after 7 days (optional logic could go here)
+  };
+
+  if (!showPrompt || !isMobile) return null;
+
+  return (
+    <div className="fixed bottom-24 left-4 right-4 z-50 animate-slide-up">
+      <GlassCard className="p-4 flex items-center justify-between gap-4 shadow-2xl border-cyan-500/30" glowColor="cyan">
+        <div className="flex items-center gap-4">
+          <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-cyan-500 to-blue-600 flex items-center justify-center shadow-lg shadow-cyan-500/20">
+            <img src="/icon-192.png" alt="App Icon" className="w-10 h-10 object-contain" onError={(e) => e.target.style.display = 'none'} />
+            <Zap size={24} className="text-white absolute" />
+          </div>
+          <div>
+            <h3 className="font-bold text-white text-lg">Install App</h3>
+            <p className="text-white/60 text-xs">Add to home screen for better experience</p>
+          </div>
+        </div>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={handleDismiss}
+            className="p-2 rounded-lg hover:bg-white/10 text-white/50 transition-colors"
+          >
+            <X size={20} />
+          </button>
+          <button
+            onClick={handleInstall}
+            className="px-4 py-2 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 text-white font-bold text-sm shadow-lg shadow-cyan-500/30 hover:shadow-cyan-500/50 transition-all hover:scale-105 flex items-center gap-2"
+          >
+            <Download size={16} />
+            Install
+          </button>
+        </div>
+      </GlassCard>
+      <style>{`
+        @keyframes slide-up {
+          from { transform: translateY(100px); opacity: 0; }
+          to { transform: translateY(0); opacity: 1; }
+        }
+        .animate-slide-up {
+          animation: slide-up 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+      `}</style>
+    </div>
+  );
+};
 
 // Main App
 export default function App() {
@@ -1990,6 +2086,7 @@ export default function App() {
       }}
     >
       <Confetti active={showConfetti} />
+      <InstallPrompt />
 
       <style>{`
         @keyframes confettiFall {
@@ -2083,7 +2180,7 @@ export default function App() {
         </div>
 
         {/* Main Content */}
-        <div className="flex-1 p-4 sm:p-6 lg:p-8 pb-28 lg:pb-8 overflow-y-auto">
+        <div className="flex-1 p-5 sm:p-6 lg:p-8 pb-32 lg:pb-8 overflow-y-auto">
           <div className="max-w-6xl mx-auto w-full">
             {view === 'home' && renderHome()}
             {view === 'section' && renderSection()}
