@@ -550,7 +550,7 @@ const SectionCard = ({ section, onClick, onDelete }) => {
   };
 
   return (
-    <GlassCard onClick={onClick} className={`p-6 sm:p-6 group ${isDeleting ? 'animate-magic-delete' : ''}`}>
+    <GlassCard onClick={onClick} className={`p-6 sm:p-6 group transition-all duration-300 active:scale-[1.02] ${isDeleting ? 'animate-magic-delete' : ''}`}>
       {isDeleting && (
         <>
           {Array.from({ length: 15 }).map((_, i) => (
@@ -576,7 +576,7 @@ const SectionCard = ({ section, onClick, onDelete }) => {
           <h3 className="text-2xl sm:text-xl font-bold text-white group-hover:text-cyan-300 transition-colors duration-300">
             {section.title}
           </h3>
-          <p className="text-sm text-white/50 mt-1">
+          <p className="text-sm text-white/50 mt-1 whitespace-nowrap">
             {section.subsections?.length || 0} subsections • {section.tasks?.length || 0} tasks
           </p>
         </div>
