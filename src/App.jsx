@@ -275,7 +275,7 @@ const GlassCard = ({ children, className = '', onClick, hover3D = true, glowColo
         setTransform('');
         setGlowPos({ x: 50, y: 50 });
       }}
-      className={`relative overflow-hidden rounded-3xl cursor-pointer backdrop-blur-xl border border-white/10 transition-all duration-300 ${className}`}
+      className={`relative overflow-hidden rounded-3xl cursor-pointer backdrop-blur-xl border border-white/10 transition-all duration-300 active:scale-[0.98] ${className}`}
       style={{
         background: 'linear-gradient(135deg, rgba(255,255,255,0.12) 0%, rgba(255,255,255,0.05) 100%)',
         boxShadow: '0 8px 32px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.2)',
@@ -638,7 +638,9 @@ const SubsectionCard = ({ subsection, onClick, onDelete }) => {
           <h4 className="font-semibold text-white text-xl sm:text-lg">{subsection.title}</h4>
           <p className="text-sm text-white/50">{subsection.tasks?.length || 0} tasks</p>
         </div>
-        <ProgressRing percent={subsection.completionPercent} size={50} strokeWidth={4} />
+        <div className="flex-shrink-0">
+          <ProgressRing percent={subsection.completionPercent} size={50} strokeWidth={4} />
+        </div>
         {onDelete && (
           <button
             onClick={handleDelete}
@@ -908,44 +910,44 @@ const AddForm = ({ type, onSubmit, loading, currentSection }) => {
 };
 
 // Stats Bar
+// Stats Bar - Redesigned for Mobile
 const StatsBar = ({ stats }) => (
-  <div
-    className="flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-6 px-6 py-6 sm:py-4 rounded-2xl backdrop-blur-xl border border-white/10"
-    style={{
-      background: 'linear-gradient(135deg, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0.03) 100%)'
-    }}
-  >
-    <div className="flex items-center gap-3">
-      <div className="p-2 rounded-xl bg-yellow-500/20">
-        <Trophy size={22} className="text-yellow-400" />
+  <div className="grid grid-cols-3 gap-3 sm:gap-6">
+    <GlassCard className="p-4 sm:p-6 flex flex-col items-center justify-center gap-2" hover3D={false}>
+      <div className="p-2 rounded-xl bg-yellow-500/20 mb-1">
+        <Trophy size={20} className="text-yellow-400" />
       </div>
-      <div>
-        <span className="font-bold text-white text-xl">{stats.points?.toLocaleString() || 0}</span>
-        <p className="text-xs text-white/50">Points</p>
+      <div className="text-center">
+        <span className="font-bold text-white text-lg sm:text-xl block leading-none mb-1">
+          {stats.points?.toLocaleString() || 0}
+        </span>
+        <p className="text-[10px] sm:text-xs text-white/50 font-medium uppercase tracking-wider">Points</p>
       </div>
-    </div>
-    <div className="hidden sm:block w-px h-10 bg-white/10" />
-    <div className="flex items-center gap-3">
-      <div className="p-2 rounded-xl bg-orange-500/20">
-        <Flame size={22} className="text-orange-400" />
+    </GlassCard>
+
+    <GlassCard className="p-4 sm:p-6 flex flex-col items-center justify-center gap-2" hover3D={false}>
+      <div className="p-2 rounded-xl bg-orange-500/20 mb-1">
+        <Flame size={20} className="text-orange-400" />
       </div>
-      <div>
-        <span className="font-bold text-white text-xl">{stats.streak || 0}</span>
-        <p className="text-xs text-white/50">Day Streak</p>
+      <div className="text-center">
+        <span className="font-bold text-white text-lg sm:text-xl block leading-none mb-1">
+          {stats.streak || 0}
+        </span>
+        <p className="text-[10px] sm:text-xs text-white/50 font-medium uppercase tracking-wider">Streak</p>
       </div>
-    </div>
-    <div className="hidden sm:block w-px h-10 bg-white/10" />
-    <div className="flex items-center gap-3">
-      <div className="p-2 rounded-xl bg-cyan-500/20">
-        <Zap size={22} className="text-cyan-400" />
+    </GlassCard>
+
+    <GlassCard className="p-4 sm:p-6 flex flex-col items-center justify-center gap-2" hover3D={false}>
+      <div className="p-2 rounded-xl bg-cyan-500/20 mb-1">
+        <Zap size={20} className="text-cyan-400" />
       </div>
-      <div>
-        <span className="font-bold text-white text-xl">
+      <div className="text-center">
+        <span className="font-bold text-white text-lg sm:text-xl block leading-none mb-1">
           {stats.tasksCompleted || 0}/{stats.totalTasks || 0}
         </span>
-        <p className="text-xs text-white/50">Completed</p>
+        <p className="text-[10px] sm:text-xs text-white/50 font-medium uppercase tracking-wider">Done</p>
       </div>
-    </div>
+    </GlassCard>
   </div>
 );
 
@@ -1114,7 +1116,7 @@ const AuthPage = ({ onLogin }) => {
         }} />
       </div>
 
-      <div className="relative w-full max-w-[280px] z-10">
+      <div className="relative w-full max-w-md z-10">
         {/* Logo */}
         <div className="mb-8">
           <Logo size="large" animated={true} />
