@@ -626,8 +626,11 @@ const SectionCard = ({ section, onClick, onDelete }) => {
           <h3 className="text-xl sm:text-3xl md:text-2xl font-bold text-white group-hover:text-cyan-300 transition-colors duration-300 truncate">
             {section.title}
           </h3>
-          <p className="text-sm sm:text-base text-white/50 mt-1 truncate">
-            {section.subsections?.length || 0} subsections • {section.tasks?.length || 0} tasks
+          <p className="text-sm sm:text-base text-white/50 mt-1">
+            {section.subsections?.length || 0} subsections
+          </p>
+          <p className="text-sm sm:text-base text-white/50">
+            {section.tasks?.length || 0} tasks
           </p>
         </div>
         <div className="flex-shrink-0">
@@ -688,7 +691,7 @@ const SubsectionCard = ({ subsection, onClick, onDelete }) => {
         </div>
         <div className="flex-1 min-w-0">
           <h4 className="font-semibold text-white text-lg sm:text-2xl md:text-xl truncate">{subsection.title}</h4>
-          <p className="text-sm sm:text-base text-white/50 truncate">{subsection.tasks?.length || 0} tasks</p>
+          <p className="text-sm sm:text-base text-white/50">{subsection.tasks?.length || 0} tasks</p>
         </div>
         <div className="flex-shrink-0">
           <ProgressRing percent={subsection.completionPercent} size={50} strokeWidth={4} />
