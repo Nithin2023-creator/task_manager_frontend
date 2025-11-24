@@ -618,20 +618,20 @@ const SectionCard = ({ section, onClick, onDelete }) => {
           ))}
         </>
       )}
-      <div className="flex items-center gap-2 sm:gap-5">
-        <div className="text-4xl sm:text-6xl md:text-5xl transform group-hover:scale-110 transition-transform duration-500 flex-shrink-0">
+      <div className="flex items-center gap-3 sm:gap-5">
+        <div className="text-5xl sm:text-7xl md:text-6xl transform group-hover:scale-110 transition-transform duration-500 flex-shrink-0">
           {section.icon}
         </div>
         <div className="flex-1 min-w-0">
-          <h3 className="text-lg sm:text-2xl md:text-xl font-bold text-white group-hover:text-cyan-300 transition-colors duration-300 truncate">
+          <h3 className="text-xl sm:text-3xl md:text-2xl font-bold text-white group-hover:text-cyan-300 transition-colors duration-300 truncate">
             {section.title}
           </h3>
-          <p className="text-xs sm:text-sm text-white/50 mt-1 truncate">
+          <p className="text-sm sm:text-base text-white/50 mt-1 truncate">
             {section.subsections?.length || 0} subsections • {section.tasks?.length || 0} tasks
           </p>
         </div>
-        <div className="flex-shrink-0 hidden sm:block">
-          <ProgressRing percent={section.completionPercent} size={50} strokeWidth={4} />
+        <div className="flex-shrink-0">
+          <ProgressRing percent={section.completionPercent} size={55} strokeWidth={5} />
         </div>
         {onDelete && (
           <button
@@ -682,16 +682,16 @@ const SubsectionCard = ({ subsection, onClick, onDelete }) => {
           ))}
         </>
       )}
-      <div className="flex items-center gap-2 sm:gap-4">
-        <div className="w-12 h-12 sm:w-14 sm:h-14 md:w-12 md:h-12 rounded-2xl bg-gradient-to-br from-purple-500/30 to-pink-500/30 flex items-center justify-center border border-purple-500/20 flex-shrink-0">
-          <Sparkles size={20} className="text-purple-300" />
+      <div className="flex items-center gap-3 sm:gap-4">
+        <div className="w-14 h-14 sm:w-16 sm:h-16 md:w-14 md:h-14 rounded-2xl bg-gradient-to-br from-purple-500/30 to-pink-500/30 flex items-center justify-center border border-purple-500/20 flex-shrink-0">
+          <Sparkles size={24} className="text-purple-300" />
         </div>
         <div className="flex-1 min-w-0">
-          <h4 className="font-semibold text-white text-base sm:text-xl md:text-lg truncate">{subsection.title}</h4>
-          <p className="text-xs sm:text-sm text-white/50 truncate">{subsection.tasks?.length || 0} tasks</p>
+          <h4 className="font-semibold text-white text-lg sm:text-2xl md:text-xl truncate">{subsection.title}</h4>
+          <p className="text-sm sm:text-base text-white/50 truncate">{subsection.tasks?.length || 0} tasks</p>
         </div>
-        <div className="flex-shrink-0 hidden sm:block">
-          <ProgressRing percent={subsection.completionPercent} size={45} strokeWidth={4} />
+        <div className="flex-shrink-0">
+          <ProgressRing percent={subsection.completionPercent} size={50} strokeWidth={4} />
         </div>
         {onDelete && (
           <button
