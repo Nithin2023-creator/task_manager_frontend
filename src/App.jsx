@@ -155,6 +155,56 @@ const api = {
     const data = await res.json();
     if (!res.ok) throw new Error(data.error || 'Failed to get achievements');
     return data;
+  },
+
+  // Daily Notes (with localStorage fallback)
+  saveNote: async (date, content) => {
+    try {
+      const res = await fetch(`${API_URL}/notes`, {
+        method: 'POST',
+        headers: api.headers(),
+        body: JSON.stringify({ date, content })
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Failed to save note');
+      // Also save to localStorage as backup
+      const notes = JSON.parse(localStorage.getItem('dailyNotes') || '{}');
+      notes[date] = content;
+      localStorage.setItem('dailyNotes', JSON.stringify(notes));
+      return data;
+    } catch (err) {
+      // Fallback to localStorage if backend fails
+      const notes = JSON.parse(localStorage.getItem('dailyNotes') || '{}');
+      notes[date] = content;
+      localStorage.setItem('dailyNotes', JSON.stringify(notes));
+      return { date, content };
+    }
+  },
+
+  getNote: async (date) => {
+    try {
+      const res = await fetch(`${API_URL}/notes/${date}`, { headers: api.headers() });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Failed to get note');
+      return data;
+    } catch (err) {
+      // Fallback to localStorage
+      const notes = JSON.parse(localStorage.getItem('dailyNotes') || '{}');
+      return { date, content: notes[date] || '' };
+    }
+  },
+
+  getAllNotes: async () => {
+    try {
+      const res = await fetch(`${API_URL}/notes`, { headers: api.headers() });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Failed to get notes');
+      return data;
+    } catch (err) {
+      // Fallback to localStorage
+      const notes = JSON.parse(localStorage.getItem('dailyNotes') || '{}');
+      return Object.entries(notes).map(([date, content]) => ({ date, content }));
+    }
   }
 };
 
@@ -587,9 +637,9 @@ const SectionCard = ({ section, onClick, onDelete }) => {
           <button
             onClick={handleDelete}
             disabled={isDeleting}
-            className="p-2 rounded-xl hover:bg-red-500/20 transition-all duration-300 hover:scale-110 disabled:opacity-50"
+            className="flex-shrink-0 p-3 sm:p-2 rounded-xl hover:bg-red-500/20 active:bg-red-500/30 transition-all duration-300 hover:scale-110 disabled:opacity-50 min-w-[44px] min-h-[44px] flex items-center justify-center"
           >
-            <X size={18} className="text-red-400" />
+            <X size={20} className="text-red-400" />
           </button>
         )}
       </div>
@@ -647,9 +697,9 @@ const SubsectionCard = ({ subsection, onClick, onDelete }) => {
           <button
             onClick={handleDelete}
             disabled={isDeleting}
-            className="p-2 rounded-xl hover:bg-red-500/20 transition-all duration-300 hover:scale-110 disabled:opacity-50"
+            className="flex-shrink-0 p-3 sm:p-2 rounded-xl hover:bg-red-500/20 active:bg-red-500/30 transition-all duration-300 hover:scale-110 disabled:opacity-50 min-w-[44px] min-h-[44px] flex items-center justify-center"
           >
-            <X size={18} className="text-red-400" />
+            <X size={20} className="text-red-400" />
           </button>
         )}
       </div>
@@ -740,6 +790,107 @@ const CalendarView = ({ onDateClick, currentDate, setCurrentDate, calendarStats 
           );
         })}
       </div>
+    </div>
+  );
+};
+
+// Daily Notes Component
+const DailyNotes = ({ date, onClose }) => {
+  const [content, setContent] = useState('');
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [lastSaved, setLastSaved] = useState(null);
+  const saveTimeoutRef = React.useRef(null);
+
+  useEffect(() => {
+    loadNote();
+  }, [date]);
+
+  const loadNote = async () => {
+    setLoading(true);
+    try {
+      const note = await api.getNote(date);
+      setContent(note.content || '');
+    } catch (err) {
+      console.error('Failed to load note:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const saveNote = async (newContent) => {
+    setSaving(true);
+    try {
+      await api.saveNote(date, newContent);
+      setLastSaved(new Date());
+    } catch (err) {
+      console.error('Failed to save note:', err);
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleContentChange = (e) => {
+    const newContent = e.target.value;
+    setContent(newContent);
+
+    // Debounce auto-save
+    if (saveTimeoutRef.current) {
+      clearTimeout(saveTimeoutRef.current);
+    }
+    saveTimeoutRef.current = setTimeout(() => {
+      saveNote(newContent);
+    }, 1000);
+  };
+
+  const formatDate = (dateStr) => {
+    const d = new Date(dateStr);
+    return d.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+  };
+
+  return (
+    <div className="space-y-4">
+      <div className="flex items-center justify-between">
+        <div>
+          <h3 className="text-xl font-bold text-white">{formatDate(date)}</h3>
+          <p className="text-sm text-white/50 mt-1">
+            {saving ? 'Saving...' : lastSaved ? `Last saved ${lastSaved.toLocaleTimeString()}` : 'Not saved yet'}
+          </p>
+        </div>
+        <button
+          onClick={onClose}
+          className="p-2 rounded-xl hover:bg-white/10 transition-all duration-300"
+        >
+          <X size={20} className="text-white/70" />
+        </button>
+      </div>
+
+      {loading ? (
+        <div className="flex items-center justify-center py-12">
+          <Loader2 size={32} className="text-cyan-400 animate-spin" />
+        </div>
+      ) : (
+        <div className="space-y-3">
+          <textarea
+            value={content}
+            onChange={handleContentChange}
+            placeholder="Write your notes for this day..."
+            className="w-full h-64 sm:h-80 p-4 rounded-2xl bg-white/5 border border-white/10 text-white placeholder-white/30 resize-none focus:outline-none focus:ring-2 focus:ring-cyan-500/50 transition-all"
+            style={{ fontFamily: 'inherit' }}
+          />
+          <div className="flex items-center justify-between text-sm text-white/50">
+            <span>{content.length} characters</span>
+            <div className="flex gap-2">
+              <span className="px-3 py-1 rounded-lg bg-white/5">
+                {content.split('\n').length} lines
+              </span>
+              <span className="px-3 py-1 rounded-lg bg-white/5">
+                {content.split(/\s+/).filter(Boolean).length} words
+              </span>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
@@ -1051,25 +1202,30 @@ const AuthPage = ({ onLogin }) => {
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({ name: '', email: '', password: '' });
   const [loading, setLoading] = useState(false);
+  const [loadingMessage, setLoadingMessage] = useState('');
   const [error, setError] = useState('');
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
     setError('');
+    setLoadingMessage('Authenticating...');
 
     try {
       if (isLogin) {
         const data = await api.login(formData.email, formData.password);
         api.setToken(data.token);
+        setLoadingMessage('Loading your data...');
         onLogin(data.user);
       } else {
         const data = await api.signup(formData.name, formData.email, formData.password);
         api.setToken(data.token);
+        setLoadingMessage('Setting up your account...');
         onLogin(data.user);
       }
     } catch (err) {
       setError(err.message || 'An error occurred');
+      setLoadingMessage('');
     } finally {
       setLoading(false);
     }
@@ -1227,7 +1383,7 @@ const AuthPage = ({ onLogin }) => {
                   {loading ? (
                     <>
                       <Loader2 size={20} className="animate-spin" />
-                      {isLogin ? 'Signing In...' : 'Creating Account...'}
+                      {loadingMessage || (isLogin ? 'Signing In...' : 'Creating Account...')}
                     </>
                   ) : (
                     <>
@@ -1514,6 +1670,7 @@ export default function App() {
   const [calendarStats, setCalendarStats] = useState({});
   const [newAchievements, setNewAchievements] = useState([]);
   const [deletingItems, setDeletingItems] = useState(new Set());
+  const [notesDate, setNotesDate] = useState(null);
 
   // Check authentication on mount
   useEffect(() => {
@@ -1525,15 +1682,22 @@ export default function App() {
 
   const loadUserData = async () => {
     try {
+      // Load critical data first (user and sections)
       const userData = await api.getMe();
       setUser(userData.user);
       setIsAuthenticated(true);
-      await Promise.all([
-        loadSections(),
+
+      // Load sections immediately to show UI
+      await loadSections();
+
+      // Load non-critical data in the background (don't await)
+      Promise.all([
         loadStats(),
         loadAchievements(),
         loadWeeklyStats()
-      ]);
+      ]).catch(err => {
+        console.error('Failed to load secondary data:', err);
+      });
     } catch (err) {
       api.clearToken();
       setIsAuthenticated(false);
@@ -1685,11 +1849,37 @@ export default function App() {
     setLoading(true);
     try {
       const sectionId = currentSection.id || currentSection._id;
+
+      // If we're in a subsection view, add the parent subsection ID
+      if (currentSubsection && modalOpen === 'addNestedSubsection') {
+        data.parentSubsectionId = currentSubsection.id || currentSubsection._id;
+      }
+
       await api.createSubsection(sectionId, data);
       await loadSections();
 
-      const updated = sections.find(s => (s.id || s._id) === sectionId);
-      setCurrentSection(updated);
+      const updated = await api.getSections();
+      const section = updated.find(s => (s.id || s._id) === sectionId);
+      setCurrentSection(section);
+
+      // If we were in a subsection, update it
+      if (currentSubsection) {
+        const findSubsection = (subsections, id) => {
+          for (const sub of subsections) {
+            if ((sub.id || sub._id) === id) return sub;
+            if (sub.subsections) {
+              const found = findSubsection(sub.subsections, id);
+              if (found) return found;
+            }
+          }
+          return null;
+        };
+        const updatedSubsection = findSubsection(section.subsections, currentSubsection.id || currentSubsection._id);
+        if (updatedSubsection) {
+          setCurrentSubsection(updatedSubsection);
+        }
+      }
+
       setModalOpen(null);
     } catch (err) {
       setError(err.message || 'Failed to create subsection');
@@ -1990,6 +2180,7 @@ export default function App() {
 
   const renderSubsection = () => {
     if (!currentSubsection) return null;
+    const hasSubsections = currentSubsection.subsections?.length > 0;
 
     return (
       <div className="space-y-6">
@@ -2012,33 +2203,61 @@ export default function App() {
           <ProgressRing percent={currentSubsection.completionPercent} size={70} strokeWidth={6} />
         </div>
 
-        <button
-          onClick={() => setModalOpen('addTask')}
-          className="w-full py-4 rounded-xl bg-gradient-to-r from-cyan-500/20 to-purple-500/20 hover:from-cyan-500/30 hover:to-purple-500/30 text-cyan-300 font-medium transition-all duration-300 flex items-center justify-center gap-2 hover:scale-[1.01]"
-        >
-          <Plus size={18} /> Add Task
-        </button>
+        <div className="flex gap-3">
+          <button
+            onClick={() => setModalOpen('addNestedSubsection')}
+            className="flex-1 py-4 rounded-xl bg-white/10 hover:bg-white/15 text-white/70 font-medium transition-all duration-300 flex items-center justify-center gap-2 hover:scale-[1.02]"
+          >
+            <Plus size={18} /> Add Subsection
+          </button>
+          {!hasSubsections && (
+            <button
+              onClick={() => setModalOpen('addTask')}
+              className="flex-1 py-4 rounded-xl bg-gradient-to-r from-cyan-500/20 to-purple-500/20 hover:from-cyan-500/30 hover:to-purple-500/30 text-cyan-300 font-medium transition-all duration-300 flex items-center justify-center gap-2 hover:scale-[1.02]"
+            >
+              <Plus size={18} /> Add Task
+            </button>
+          )}
+        </div>
 
-        <div className="space-y-4">
-          <h2 className="text-xl font-semibold text-white/80">Tasks</h2>
-          {currentSubsection.tasks?.length === 0 ? (
-            <GlassCard className="p-12 text-center" hover3D={false}>
-              <Star size={48} className="text-white/20 mx-auto mb-4" />
-              <p className="text-white/50 text-lg">No tasks yet. Add your first task!</p>
-            </GlassCard>
-          ) : (
-            <div className="grid gap-4">
-              {currentSubsection.tasks?.map(task => (
-                <TaskCard
-                  key={task.id || task._id}
-                  task={task}
-                  onComplete={handleCompleteTask}
-                  onDelete={handleDeleteTask}
+        {hasSubsections ? (
+          <div className="space-y-4">
+            <h2 className="text-xl font-semibold text-white/80">Subsections</h2>
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+              {currentSubsection.subsections.map(sub => (
+                <SubsectionCard
+                  key={sub.id || sub._id}
+                  subsection={sub}
+                  onClick={() => {
+                    setCurrentSubsection(sub);
+                  }}
+                  onDelete={handleDeleteSubsection}
                 />
               ))}
             </div>
-          )}
-        </div>
+          </div>
+        ) : (
+          <div className="space-y-4">
+            <h2 className="text-xl font-semibold text-white/80">Tasks</h2>
+            {currentSubsection.tasks?.length === 0 ? (
+              <GlassCard className="p-12 text-center" hover3D={false}>
+                <Star size={48} className="text-white/20 mx-auto mb-4" />
+                <p className="text-white/50 text-lg">No tasks yet. Add your first task!</p>
+              </GlassCard>
+            ) : (
+              <div className="grid gap-4">
+                {currentSubsection.tasks?.map(task => (
+                  <TaskCard
+                    key={task.id || task._id}
+                    task={task}
+                    onComplete={handleCompleteTask}
+                    onDelete={handleDeleteTask}
+                  />
+                ))}
+              </div>
+            )}
+          </div>
+        )}
       </div>
     );
   };
@@ -2049,6 +2268,18 @@ export default function App() {
         <h1 className="text-3xl font-bold text-white mb-2">Calendar View</h1>
         <p className="text-white/50">Track your daily progress</p>
       </div>
+
+      <button
+        onClick={() => {
+          const today = new Date();
+          const dateStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+          setNotesDate(dateStr);
+          setModalOpen('dailyNotes');
+        }}
+        className="w-full py-4 rounded-xl bg-gradient-to-r from-purple-500/20 to-pink-500/20 hover:from-purple-500/30 hover:to-pink-500/30 text-purple-300 font-medium transition-all duration-300 flex items-center justify-center gap-2 hover:scale-[1.01]"
+      >
+        <Sparkles size={18} /> Today's Notes
+      </button>
 
       <GlassCard className="p-6" hover3D={false}>
         <CalendarView
@@ -2231,6 +2462,10 @@ export default function App() {
         <AddForm type="subsection" onSubmit={handleAddSubsection} loading={loading} />
       </Modal>
 
+      <Modal isOpen={modalOpen === 'addNestedSubsection'} onClose={() => setModalOpen(null)} title="Create Nested Subsection">
+        <AddForm type="subsection" onSubmit={handleAddSubsection} loading={loading} />
+      </Modal>
+
       <Modal isOpen={modalOpen === 'addTask'} onClose={() => setModalOpen(null)} title="Create New Task">
         <AddForm type="task" onSubmit={handleAddTask} loading={loading} currentSection={currentSection} />
       </Modal>
@@ -2270,6 +2505,10 @@ export default function App() {
             ))}
           </div>
         )}
+      </Modal>
+
+      <Modal isOpen={modalOpen === 'dailyNotes'} onClose={() => setModalOpen(null)} title="Daily Notes" size="lg">
+        {notesDate && <DailyNotes date={notesDate} onClose={() => setModalOpen(null)} />}
       </Modal>
     </div>
   );
