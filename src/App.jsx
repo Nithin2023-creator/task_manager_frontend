@@ -600,7 +600,7 @@ const SectionCard = ({ section, onClick, onDelete }) => {
   };
 
   return (
-    <GlassCard onClick={onClick} className={`p-6 sm:p-6 group transition-all duration-300 active:scale-[1.02] ${isDeleting ? 'animate-magic-delete' : ''}`}>
+    <GlassCard onClick={onClick} className={`p-4 sm:p-6 group transition-all duration-300 active:scale-[1.02] ${isDeleting ? 'animate-magic-delete' : ''}`}>
       {isDeleting && (
         <>
           {Array.from({ length: 15 }).map((_, i) => (
@@ -618,20 +618,20 @@ const SectionCard = ({ section, onClick, onDelete }) => {
           ))}
         </>
       )}
-      <div className="flex items-center gap-5">
-        <div className="text-6xl sm:text-5xl transform group-hover:scale-110 transition-transform duration-500">
+      <div className="flex items-center gap-2 sm:gap-5">
+        <div className="text-4xl sm:text-6xl md:text-5xl transform group-hover:scale-110 transition-transform duration-500 flex-shrink-0">
           {section.icon}
         </div>
-        <div className="flex-1">
-          <h3 className="text-2xl sm:text-xl font-bold text-white group-hover:text-cyan-300 transition-colors duration-300">
+        <div className="flex-1 min-w-0">
+          <h3 className="text-lg sm:text-2xl md:text-xl font-bold text-white group-hover:text-cyan-300 transition-colors duration-300 truncate">
             {section.title}
           </h3>
-          <p className="text-sm text-white/50 mt-1 whitespace-nowrap">
+          <p className="text-xs sm:text-sm text-white/50 mt-1 truncate">
             {section.subsections?.length || 0} subsections • {section.tasks?.length || 0} tasks
           </p>
         </div>
-        <div className="flex-shrink-0">
-          <ProgressRing percent={section.completionPercent} size={65} strokeWidth={5} />
+        <div className="flex-shrink-0 hidden sm:block">
+          <ProgressRing percent={section.completionPercent} size={50} strokeWidth={4} />
         </div>
         {onDelete && (
           <button
@@ -664,7 +664,7 @@ const SubsectionCard = ({ subsection, onClick, onDelete }) => {
   };
 
   return (
-    <GlassCard onClick={onClick} className={`p-6 sm:p-5 group ${isDeleting ? 'animate-magic-delete' : ''}`} glowColor="purple">
+    <GlassCard onClick={onClick} className={`p-4 sm:p-5 group ${isDeleting ? 'animate-magic-delete' : ''}`} glowColor="purple">
       {isDeleting && (
         <>
           {Array.from({ length: 10 }).map((_, i) => (
@@ -682,16 +682,16 @@ const SubsectionCard = ({ subsection, onClick, onDelete }) => {
           ))}
         </>
       )}
-      <div className="flex items-center gap-4">
-        <div className="w-14 h-14 sm:w-12 sm:h-12 rounded-2xl bg-gradient-to-br from-purple-500/30 to-pink-500/30 flex items-center justify-center border border-purple-500/20">
-          <Sparkles size={22} className="text-purple-300" />
+      <div className="flex items-center gap-2 sm:gap-4">
+        <div className="w-12 h-12 sm:w-14 sm:h-14 md:w-12 md:h-12 rounded-2xl bg-gradient-to-br from-purple-500/30 to-pink-500/30 flex items-center justify-center border border-purple-500/20 flex-shrink-0">
+          <Sparkles size={20} className="text-purple-300" />
         </div>
-        <div className="flex-1">
-          <h4 className="font-semibold text-white text-xl sm:text-lg">{subsection.title}</h4>
-          <p className="text-sm text-white/50">{subsection.tasks?.length || 0} tasks</p>
+        <div className="flex-1 min-w-0">
+          <h4 className="font-semibold text-white text-base sm:text-xl md:text-lg truncate">{subsection.title}</h4>
+          <p className="text-xs sm:text-sm text-white/50 truncate">{subsection.tasks?.length || 0} tasks</p>
         </div>
-        <div className="flex-shrink-0">
-          <ProgressRing percent={subsection.completionPercent} size={50} strokeWidth={4} />
+        <div className="flex-shrink-0 hidden sm:block">
+          <ProgressRing percent={subsection.completionPercent} size={45} strokeWidth={4} />
         </div>
         {onDelete && (
           <button
